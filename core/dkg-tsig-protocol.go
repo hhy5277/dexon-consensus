@@ -461,6 +461,18 @@ func (d *dkgProtocol) processPrivateShare(
 	if !exist {
 		return nil
 	}
+	if prvShare.ReceiverID == d.ID {
+		if _, exist := d.prvSharesReceived[prvShare.ProposerID]; exist {
+			return nil
+		}
+	} else {
+		if _, exist := d.antiComplaintReceived[prvShare.ReceiverID]; exist {
+			if _, exist :=
+				d.antiComplaintReceived[prvShare.ReceiverID][prvShare.ProposerID]; exist {
+				return nil
+			}
+		}
+	}
 	if err := d.sanityCheck(prvShare); err != nil {
 		return err
 	}
